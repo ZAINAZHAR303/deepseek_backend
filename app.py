@@ -85,3 +85,9 @@ async def analyze_document(request: DocumentRequest):
     except Exception as e:
         print("Error during analysis:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
+
+# Run FastAPI with a specified port (8000)
+if __name__ == "__main__":
+    import uvicorn
+    PORT = int(os.getenv("PORT", 8000))  # Use Railway's assigned port or default to 8000
+    uvicorn.run(app, host="0.0.0.0", port=PORT)

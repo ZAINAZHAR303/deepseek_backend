@@ -1,15 +1,15 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware  
-\
+from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import BaseModel
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv
 import os
-from langchain_openai import ChatOpenAI
+
 # Load API Key from .env
 load_dotenv()
-API_KEY = os.getenv("DEEPSEEK_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Initialize FastAPI app
 app = FastAPI()
@@ -25,10 +25,9 @@ app.add_middleware(
 
 # Initialize Gemini LLM
 # Initialize Gemini LLM
-llm = ChatOpenAI(
-    model="deepseek-chat",  # Change this if your model name is different
-    openai_api_key=API_KEY,  # Use your actual API key
-    openai_api_base="https://api.aimlapi.com/v1"  # ✅ Set custom base URL
+llm = llm = ChatGoogleGenerativeAI(
+    model="gemini-1.5-flash",
+    google_api_key=GEMINI_API_KEY
 )
 
 # Define request model
@@ -73,6 +72,9 @@ async def analyze_document(request: DocumentRequest):
     try:
         text = request.extracted_text
         print("Received extracted text:", text)  # Debugging
+
+        if not text or not text.strip():
+            raise ValueError("Extracted text is empty or invalid")
 
         # Run analysis
         summary = analyze_text("summarize", text)
